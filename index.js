@@ -17,7 +17,23 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
         await client.connect()
-        console.log('database connect successfully')
+        const database = client.db('foding_travel');
+        const tourCollection = database.collection('tours');
+
+
+        // Get Tours API
+        app.get('/tours', async(req,res) =>{
+            const cursor = tourCollection.find({});
+            const tours = await cursor.toArray();
+            res.send(tours);
+        });
+
+        // POST API
+        app.post('/tours', async (req, res) =>{
+            const tour = req.body
+            const result = await tourCollection.insertOne(tour);
+            res.json(result);
+        });
     }
     finally{
         // await client.close();
